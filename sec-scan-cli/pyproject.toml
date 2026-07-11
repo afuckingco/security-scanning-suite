@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sec-scan"
+version = "0.1.0"
+description = "CLI wrapper for security scanning (npm audit, pip-audit, gitleaks, Suricata)"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{name = "Afiq Andico", email = "[REDACTED]"}]
+license = {text = "MIT"}
+keywords = ["security", "ci", "npm", "pip", "gitleaks", "suricata", "cli"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+]
+
+# runtime dependencies (minimal)
+dependencies = [
+    "click>=8",
+    "requests",
+    "pyyaml",
+    "rich",
+]
