@@ -1,0 +1,4 @@
+timestamp,userid,action,amount
+2026-07-11T10:00:00Z,alice,login,0
+2026-07-11T10:05:12Z,bob,transfer,100.5
+2026-07-11T10:07:30Z,charlie,withdraw,20
