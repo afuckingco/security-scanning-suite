@@ -1,0 +1,14 @@
+**/.git
+**/.github
+**/node_modules
+**/venv
+**/ENV
+**/env
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+*.dist-info
+*.log
+data/
+logs/
