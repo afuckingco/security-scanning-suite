@@ -1,0 +1,15 @@
+{
+  "name": "secure-registry-proxy",
+  "version": "0.1.0",
+  "description": "Node.js proxy that scans npm/PyPI packages with npm audit, pip-audit, gitleaks before forwarding.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.7.2",
+    "morgan": "^1.10.0",
+    "dotenv": "^16.4.5"
+  }
+}
