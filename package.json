@@ -1,0 +1,11 @@
+{
+  "name": "secure-ci-pipeline",
+  "version": "0.1.0",
+  "description": "CI pipeline for multi‑stack security scanning",
+  "scripts": {},
+  "author": "Afiq",
+  "license": "MIT",
+  "devDependencies": {
+    "npm-audit": "*"
+  }
+}
