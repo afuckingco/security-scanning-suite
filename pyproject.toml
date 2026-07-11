@@ -1,0 +1,22 @@
+[project]
+name = "log-anonymizer"
+version = "0.1.0"
+description = "Toolkit for privacy‑preserving log anonymization"
+authors = [{name = "Afiq Andico", email = "[REDACTED]"}]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+dependencies = [
+    "click",
+    "fastapi",
+    "uvicorn[standard]",
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "cryptography",
+    "pydantic"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

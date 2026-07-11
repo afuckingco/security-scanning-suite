@@ -1,0 +1,8 @@
+click
+fastapi
+uvicorn[standard]
+pandas
+numpy
+scikit-learn
+cryptography
+pydantic
