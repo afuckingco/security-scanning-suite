@@ -1,0 +1,60 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install npm deps
+        run: npm ci
+
+      - name: Install pip deps
+        run: pip install -r requirements.txt
+
+      - name: Run npm audit
+        run: ./scripts/run_npm_audit.sh
+
+      - name: Run pip-audit
+        run: ./scripts/run_pip_audit.sh
+
+      - name: Run gitleaks
+        run: ./scripts/run_gitleaks.sh
+
+      - name: Run Suricata (docker)
+        run: ./scripts/run_suricata.sh
+
+      - name: Aggregate report
+        run: ./scripts/aggregate_report.py
+
+      - name: Upload markdown as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security_report.md
+
+      - name: Send to Slack
+        if: always()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"Security scan finished. <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View run>\n*Report:* $(cat security_report.md | sed ':a;N;$!ba;s/\n/\n/g')\"}" \
+            $SLACK_WEBHOOK
