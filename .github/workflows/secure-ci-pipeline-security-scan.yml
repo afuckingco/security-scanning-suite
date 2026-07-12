@@ -45,7 +45,7 @@ jobs:
         if: false  # disabled: requires host network access unavailable on GitHub-hosted runners
         run: ./scripts/run_suricata.sh
       - name: Aggregate report
-        run: ./scripts/aggregate_report.py
+        run: python ./scripts/aggregate_report.py
       - name: Upload markdown as artifact
         uses: actions/upload-artifact@v4
         with:
