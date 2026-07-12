@@ -5,6 +5,7 @@ title = "Gitleaks config"
   regex = '''AKIA[0-9A-Z]{16}'''
   tags = ["key", "aws"]
 [[rules]]
+  id = "GENERIC_API_KEY"
   description = "Generic API key"
   regex = '''[A-Za-z0-9]{32,}'''
   tags = ["key", "generic"]

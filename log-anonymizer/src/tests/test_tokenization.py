@@ -1,5 +1,5 @@
 import pytest
-from src.anonymizers import tokenization
+from log_anonymizer.anonymizers import tokenization
 
 def test_tokenize_text():
     txt = "alice bob alice"
