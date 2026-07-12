@@ -21,3 +21,5 @@ Thumbs.db
 
 # Secrets / binaries
 bin/gitleaks.exe
+# Cache for downloaded binaries
+.cache/
