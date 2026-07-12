@@ -32,6 +32,8 @@ jobs:
         run: npm ci
       - name: Install pip deps
         run: pip install -r requirements.txt
+      - name: Make scripts executable
+        run: chmod +x ./scripts/*.sh
       - name: Run npm audit
         run: ./scripts/run_npm_audit.sh
       - name: Run pip-audit
