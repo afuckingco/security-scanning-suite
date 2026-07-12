@@ -42,6 +42,7 @@ jobs:
         run: ./scripts/run_gitleaks.sh
       - name: Run Suricata (docker)
         continue-on-error: true
+        if: false  # disabled: requires host network access unavailable on GitHub-hosted runners
         run: ./scripts/run_suricata.sh
       - name: Aggregate report
         run: ./scripts/aggregate_report.py
