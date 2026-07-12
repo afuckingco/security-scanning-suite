@@ -1,16 +1,25 @@
-name: CI
+name: log-anonymizer CI
 
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
+    paths: [ 'log-anonymizer/**' ]
   pull_request:
     branches: [ main ]
+    paths: [ 'log-anonymizer/**' ]
+
+permissions:
+  contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: log-anonymizer
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -24,10 +33,13 @@ jobs:
           pytest -n auto
 
   docker:
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
@@ -38,14 +50,18 @@ jobs:
       - name: Build & push API image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: Dockerfile
+          context: log-anonymizer
+          file: log-anonymizer/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/log-anonymizer-api:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/log-anonymizer-api:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/log-anonymizer-api:latest
       - name: Build & push Proxy image
         uses: docker/build-push-action@v5
         with:
-          context: ./dashboard
-          file: ./dashboard/Dockerfile
+          context: log-anonymizer/dashboard
+          file: log-anonymizer/dashboard/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/log-anonymizer-proxy:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/log-anonymizer-proxy:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/log-anonymizer-proxy:latest
