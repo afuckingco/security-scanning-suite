@@ -1,5 +1,5 @@
 import pytest
-from src.anonymizers import hashing
+from log_anonymizer.anonymizers import hashing
 
 def test_hash_text():
     txt = "secret"
