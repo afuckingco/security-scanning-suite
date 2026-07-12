@@ -1,60 +1,64 @@
-name: Security Scan
+name: secure-ci-pipeline Security Scan
 
 on:
   push:
     branches: [ main ]
+    paths: [ 'secure-ci-pipeline/**' ]
   pull_request:
     types: [ opened, synchronize, reopened ]
+    paths: [ 'secure-ci-pipeline/**' ]
+
+permissions:
+  contents: read
 
 jobs:
   scan:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: secure-ci-pipeline
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - name: Install npm deps
         run: npm ci
-
       - name: Install pip deps
         run: pip install -r requirements.txt
-
+      - name: Make scripts executable
+        run: chmod +x ./scripts/*.sh
       - name: Run npm audit
         run: ./scripts/run_npm_audit.sh
-
       - name: Run pip-audit
         run: ./scripts/run_pip_audit.sh
-
       - name: Run gitleaks
         run: ./scripts/run_gitleaks.sh
-
       - name: Run Suricata (docker)
+        continue-on-error: true
+        if: false  # disabled: requires host network access unavailable on GitHub-hosted runners
         run: ./scripts/run_suricata.sh
-
       - name: Aggregate report
-        run: ./scripts/aggregate_report.py
-
+        run: python ./scripts/aggregate_report.py
       - name: Upload markdown as artifact
         uses: actions/upload-artifact@v4
         with:
           name: security-report
-          path: security_report.md
-
+          path: secure-ci-pipeline/security_report.md
       - name: Send to Slack
         if: always()
+        continue-on-error: true
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         run: |
-          curl -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\"Security scan finished. <${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}|View run>\n*Report:* $(cat security_report.md | sed ':a;N;$!ba;s/\n/\n/g')\"}" \
-            $SLACK_WEBHOOK
+          if [ -n "$SLACK_WEBHOOK" ]; then
+            jq -n --arg text "Security scan finished. ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}" '{text: $text}' | curl -X POST -H 'Content-type: application/json' -d @- "$SLACK_WEBHOOK"
+          else
+            echo "SLACK_WEBHOOK not set, skipping notification"
+          fi
