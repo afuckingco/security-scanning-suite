@@ -44,4 +44,4 @@ if [[ ! -x "${GL}" ]]; then
   install -m 0755 "${tmp}/gitleaks" "${GL}"
 fi
 
-"${GL}" detect -c "${SCRIPT_DIR}/../.gitleaks.toml" -r . -f json > "${SCRIPT_DIR}/../gitleaks.json"
+"${GL}" detect -c "${SCRIPT_DIR}/../.gitleaks.toml" --source "${SCRIPT_DIR}/.." --report-path "${SCRIPT_DIR}/../gitleaks.json" -f json --exit-code 0

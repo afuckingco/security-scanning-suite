@@ -52,8 +52,12 @@ jobs:
           path: secure-ci-pipeline/security_report.md
       - name: Send to Slack
         if: always()
+        continue-on-error: true
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         run: |
-          jq -n --arg text "Security scan finished. ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}" \
-            '{text: $text}' | curl -X POST -H 'Content-type: application/json' -d @- "$SLACK_WEBHOOK"
+          if [ -n "$SLACK_WEBHOOK" ]; then
+            jq -n --arg text "Security scan finished. ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}" '{text: $text}' | curl -X POST -H 'Content-type: application/json' -d @- "$SLACK_WEBHOOK"
+          else
+            echo "SLACK_WEBHOOK not set, skipping notification"
+          fi
