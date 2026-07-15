@@ -1,4 +1,6 @@
 # Security Scanning Suite
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  [![CI](https://github.com/afuckingco/security-scanning-suite/actions/workflows/ci.yml/badge.svg)](https://github.com/afuckingco/security-scanning-suite/actions)
+
 
 Consolidated collection of security scanning/CI tools, each in its own subdirectory with independent history preserved via git subtree.
 
