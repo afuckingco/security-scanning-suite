@@ -71,4 +71,4 @@ The pipeline is defined in `.github/workflows/security-scan.yml`. It automatical
 ---
 
 ## License
-MIT © 2026 Afiq Andico — free for personal and commercial use.
+MIT © 2026 afuckingco — free for personal and commercial use.

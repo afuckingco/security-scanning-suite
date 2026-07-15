@@ -71,4 +71,4 @@ Now any `npm install` or `pip install` will be routed through the proxy and auto
 ---
 
 ## License
-MIT © 2026 Afiq Andico
+MIT © 2026 afuckingco
