@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Unified security operations suite: anomaly detection + secure package registry proxy"
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{name = "Afiq Andico", email = "[REDACTED]"}]
+authors = [{name = "afuckingco", email = "[REDACTED]"}]
 license = {text = "MIT"}
 keywords = ["security", "anomaly-detection", "registry-proxy", "ci", "docker"]
 classifiers = [

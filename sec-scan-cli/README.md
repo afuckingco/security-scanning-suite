@@ -69,4 +69,4 @@ Shows the current CLI version.
 ---
 
 ## License
-MIT © 2026 Afiq Andico
+MIT © 2026 afuckingco
