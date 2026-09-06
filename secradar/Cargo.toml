@@ -1,0 +1,51 @@
+[package]
+name = "secradar"
+version = "1.0.0"
+edition = "2021"
+authors = ["Afiq Andico Pangimpian <afiqandico13@gmail.com>"]
+license = "MIT"
+description = "Fast secret scanner — finds API keys, tokens, passwords, and high-entropy strings in source code and git history. Zero cloud calls, 100% local."
+readme = "README.md"
+repository = "https://github.com/afiqandico13/secradar"
+homepage = "https://github.com/afiqandico13/secradar"
+keywords = ["security", "secret-scanner", "secrets", "credentials", "api-keys", "cli", "devsecops", "rust"]
+categories = ["command-line-utilities", "security", "development-tools"]
+exclude = ["target", "tests/fixtures/**/.git", "**/*.bak"]
+
+[[bin]]
+name = "secradar"
+path = "src/main.rs"
+
+[lib]
+name = "secradar"
+path = "src/lib.rs"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive", "color"] }
+regex = "1.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+rayon = "1.10"
+ignore = "0.4"
+walkdir = "2.5"
+git2 = { version = "0.19", default-features = false }
+anyhow = "1.0"
+thiserror = "1.0"
+colored = "2.1"
+atty = "0.2"
+indicatif = "0.17"
+once_cell = "1.20"
+log = "0.4"
+env_logger = "0.11"
+
+[dev-dependencies]
+tempfile = "3.13"
+assert_cmd = "2.0"
+predicates = "3.1"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+opt-level = 3
+strip = true
