@@ -1,0 +1,74 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Pilgrims Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -yqq --no-install-recommends             nmap curl whois dnsutils jq openssl python3 sqlite3 qrencode             netcat-openbsd bc file binutils xxd uuid-runtime coreutils
+
+      - name: Make scripts executable
+        run: |
+          chmod +x pilgrims.sh
+          chmod +x core/*.sh 2>/dev/null || true
+          chmod +x modules/*/pilgrims-*.sh 2>/dev/null || true
+          chmod +x test*.sh full-test.sh 2>/dev/null || true
+
+      - name: test-simple.sh
+        id: test_simple
+        run: |
+          timeout 120 ./test-simple.sh
+          echo "exit=$?"
+        continue-on-error: false
+
+      - name: test-all-features.sh
+        id: test_all
+        run: |
+          timeout 180 ./test-all-features.sh
+          echo "exit=$?"
+        continue-on-error: false
+
+      - name: full-test.sh
+        id: test_full
+        run: |
+          timeout 300 ./full-test.sh
+          echo "exit=$?"
+        continue-on-error: false
+
+      - name: "Smoke test: --help"
+        run: |
+          ./pilgrims.sh --help > /dev/null
+          echo "✓ --help works"
+
+      - name: "Smoke test: --modules"
+        run: |
+          ./pilgrims.sh --modules > /dev/null
+          echo "✓ --modules works"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "=== Test Summary ==="
+          echo "test-simple:      ${{ steps.test_simple.outcome }}"
+          echo "test-all-features: ${{ steps.test_all.outcome }}"
+          echo "test-full:        ${{ steps.test_full.outcome }}"

@@ -1,0 +1,19 @@
+# Normalize line endings to LF on checkout/commit for shell scripts and text.
+* text=auto eol=lf
+
+# Shell scripts must always be LF (bash shebang parsing).
+*.sh text eol=lf
+
+# Documentation and config files.
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.txt text eol=lf
+*.rc text eol=lf
+
+# Dockerfile and packaging
+Dockerfile text eol=lf
+*.rb text eol=lf
+PKGBUILD text eol=lf

@@ -1,0 +1,26 @@
+{
+    "version": "17.0.0",
+    "description": "PILGRIMS v17.0 — Ultimate Security Framework",
+    "homepage": "https://github.com/afiqandico13/pilgrims-v17",
+    "license": "MIT",
+    "depends": "",
+    "suggest": {
+        "nmap": "optional network scanner",
+        "jq": "required for JSON parsing"
+    },
+    "bin": "pilgrims.sh",
+    "checkver": "github",
+    "autoupdate": {
+        "source": "afiqandico13/pilgrims-v17",
+        "target": "v17.0.0"
+    },
+    "url": "https://github.com/afiqandico13/pilgrims-v17/archive/refs/tags/v17.0.0.tar.gz",
+    "hash": "REPLACE_WITH_REAL_SHA256_AT_RELEASE",
+    "pre_install": "Set-EnvironmentVariable PILGRIMS_HOME \"$dir\"",
+    "post_install": "Write-Output \"PILGRIMS installed. Run: pilgrims --help\"",
+    "persistence": null,
+    "license": {
+        "identifier": "MIT",
+        "url": "https://opensource.org/licenses/MIT"
+    }
+}

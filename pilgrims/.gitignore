@@ -1,0 +1,56 @@
+# PILGRIMS v17.0 — gitignore
+
+# Backups (local-only history)
+*.backup
+*.backup.*
+*.bak
+*~
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Runtime data — scan history, logs, databases
+shared/db/
+shared/logs/
+shared/cache/
+modules/*/db/
+modules/*/logs/
+modules/*/reports/
+modules/*/cache/
+reports/
+logs/
+cache/
+backup/
+_archive_*/
+.clobber/
+_backup_clobber_*/
+
+# Pattern-based: any directory named *_backup inside modules
+**/*_backup/
+**/_backup_*/
+**/pilgrims-backup/
+
+# Encrypted blobs / secrets
+*.enc
+.env
+.env.*
+*.key
+*.pem
+*.secret
+secrets/
+
+# Build artifacts
+*.pyc
+__pycache__/
+*.o
+*.so
+
+# Editor / IDE
+.vscode/
+.idea/
+*.iml
+# Hermes Agent artifacts
+.hermes/
+.local/
+scripts/

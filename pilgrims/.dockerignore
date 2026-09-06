@@ -1,0 +1,52 @@
+# Git
+.git/
+.gitignore
+.github/
+
+# CI / build artifacts
+.shellcheckrc
+test*.sh
+full-test.sh
+upgrade-*.sh
+setup.sh
+install-missing-modules.sh
+diagnose.sh
+
+# Runtime data (recreated on first run)
+shared/db/
+shared/logs/
+shared/cache/
+modules/*/db/
+modules/*/logs/
+modules/*/reports/
+modules/*/cache/
+reports/
+logs/
+cache/
+backup/
+
+# Sensitive / encoded files
+*.enc
+.env
+.env.*
+*.key
+*.pem
+*.secret
+secrets/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Docs not needed in container
+CHANGELOG.md
+docs/
+
+# Build artifacts
+*.pyc
+__pycache__/

@@ -1,0 +1,32 @@
+# Maintainer: Afiq Andico Pangimpian <afiqandico13@gmail.com>
+pkgname=pilgrims-v17
+pkgver=17.0.0
+pkgrel=1
+pkgdesc="PILGRIMS v17.0 — Ultimate Security Framework: 20 modules, 53 advanced features"
+arch=("any")
+url="https://github.com/afiqandico13/pilgrims-v17"
+license=("MIT")
+depends=("bash" "coreutils" "nmap" "jq" "openssl" "python")
+optdepends=(
+    "whois: WHOIS lookups"
+    "dnsutils: DNS enumeration"
+    "assetfinder: Subdomain enumeration"
+    "ffuf: Directory brute-force"
+)
+source=("https://github.com/afiqandico13/pilgrims-v17/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=("REPLACE_WITH_REAL_SHA256_AT_RELEASE")
+
+package() {
+    cd "pilgrims-v17-${pkgver}"
+
+    # Install all files to /opt/pilgrims
+    install -dm755 "$pkgdir/opt/pilgrims"
+    cp -ra * "$pkgdir/opt/pilgrims/"
+
+    # Make scripts executable
+    find "$pkgdir/opt/pilgrims" -name "*.sh" -type f -exec chmod +x {} +
+
+    # Symlink main script to /usr/bin
+    install -dm755 "$pkgdir/usr/bin"
+    ln -s /opt/pilgrims/pilgrims.sh "$pkgdir/usr/bin/pilgrims"
+}

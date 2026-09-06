@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Creating release for ${VERSION}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: PILGRIMS ${{ steps.version.outputs.VERSION }}
+          draft: true
+          generate_release_notes: true
+          body: |
+            ## PILGRIMS ${{ steps.version.outputs.VERSION }}
+
+            Ultimate Security Framework — 20 modules, 53 advanced features, modular architecture.
+
+            ### Quick Start
+            ```bash
+            git clone https://github.com/afiqandico13/pilgrims-v17.git
+            cd pilgrims-v17
+            chmod +x pilgrims.sh
+            ./pilgrims.sh --help
+            ```
+
+            **⚠️ Authorized use only** — see [DISCLAIMER.md](../blob/main/DISCLAIMER.md)
