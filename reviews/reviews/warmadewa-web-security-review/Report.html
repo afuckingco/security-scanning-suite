@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Warmadewa Web Security Review</title>
+    <style>
+@page { size: A4; margin: 2.2cm 2cm 2.2cm 2cm;
+    @top-left { content: 'Warmadewa Web Security Review'; font-family: 'Segoe UI', sans-serif; font-size: 9pt; color: #888; }
+    @top-right { content: '2026-06-18'; font-family: 'Segoe UI', sans-serif; font-size: 9pt; color: #888; }
+    @bottom-center { content: 'Halaman ' counter(page) ' dari ' counter(pages); font-family: 'Segoe UI', sans-serif; font-size: 9pt; color: #888; }
+    @bottom-right { content: 'Afiq Andico — static analysis'; font-family: 'Segoe UI', sans-serif; font-size: 9pt; color: #888; }
+}
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', 'Calibri', Tahoma, sans-serif; font-size: 10.5pt; line-height: 1.55; color: #1a1a1a; margin: 0; padding: 0; }
+h1 { font-size: 22pt; color: #1a365d; border-bottom: 3px solid #2563eb; padding-bottom: 8px; margin-top: 0; page-break-after: avoid; }
+h2 { font-size: 15pt; color: #1a365d; margin-top: 22px; margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; page-break-after: avoid; }
+h3 { font-size: 12.5pt; color: #2c5282; margin-top: 18px; margin-bottom: 8px; page-break-after: avoid; }
+h4 { font-size: 11pt; color: #2d3748; margin-top: 14px; margin-bottom: 6px; page-break-after: avoid; }
+p { margin: 8px 0; text-align: justify; }
+a { color: #2563eb; text-decoration: none; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0; page-break-inside: avoid; font-size: 9.5pt; }
+th, td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; vertical-align: top; }
+th { background: #f1f5f9; font-weight: 600; color: #1a365d; }
+tr:nth-child(even) td { background: #fafafa; }
+pre { background: #1e293b; color: #e2e8f0; padding: 12px 14px; border-radius: 4px; overflow-x: auto; font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace; font-size: 9pt; line-height: 1.4; page-break-inside: avoid; margin: 10px 0; border-left: 3px solid #2563eb; }
+code { font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace; font-size: 9.5pt; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; color: #c026d3; }
+pre code { background: transparent; padding: 0; color: inherit; }
+ul, ol { margin: 8px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+blockquote { border-left: 4px solid #2563eb; background: #eff6ff; margin: 12px 0; padding: 10px 16px; color: #1e40af; font-style: italic; page-break-inside: avoid; }
+hr { border: none; border-top: 1px solid #cbd5e1; margin: 20px 0; }
+h1, h2, h3, h4 { page-break-after: avoid; }
+table, pre, blockquote, ul, ol { page-break-inside: avoid; }
+</style>
+</head>
+<body>
+<h1 id="universitas-warmadewa-web-security-review-quick">Universitas Warmadewa — Web Security Review (Quick)</h1>
+<p><strong>Tanggal</strong>: 18 Juni 2026<br />
+<strong>Reviewer</strong>: Afiq Andico, mahasiswa Sistem Informasi, STIKOM Bali<br />
+<strong>Target</strong>: https://www.warmadewa.ac.id/<br />
+<strong>Metode</strong>: Static analysis saja — HTTP header inspection, HTML inspection<br />
+<strong>Cakupan</strong>: Public surface only</p>
+<hr />
+<h2 id="ringkasan-eksekutif">Ringkasan Eksekutif</h2>
+<p>Warmadewa website berjalan di <strong>Laravel</strong> framework (PHP) di belakang <strong>Cloudflare</strong> dengan <strong>LiteSpeed</strong> sebagai origin server. <strong>Secara keseluruhan lebih aman dari UNUD</strong> karena:<br />
+- ✅ Laravel punya CSRF protection built-in (XSRF-TOKEN cookie visible)<br />
+- ✅ Cookie flags proper (Secure, SameSite, HttpOnly)<br />
+- ✅ Tidak ada user enumeration (bukan WordPress)<br />
+- ✅ Cloudflare WAF di front<br />
+- ❌ Tapi missing security headers standard (CSP, HSTS, dll)</p>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Count</th>
+<th>Items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🟡 Medium</td>
+<td>3</td>
+<td>Missing HSTS, CSP, X-Frame-Options</td>
+</tr>
+<tr>
+<td>🟢 Low</td>
+<td>0</td>
+<td>(no major issues found)</td>
+</tr>
+<tr>
+<td>⚪ Info</td>
+<td>1</td>
+<td>Custom cookie (<code>zesXZsnTWkKIShM7GTNeC6as5KHPUkywfN8OQhYe</code>) — perlu verifikasi</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk level: RENDAH</strong> — tidak ada exploitable vulnerability dari public surface yang aku verify. Defense-in-depth perlu diperkuat.</p>
+<hr />
+<h2 id="1-tech-stack-terdeteksi">1. Tech Stack Terdeteksi</h2>
+<pre><code>Laravel (PHP framework) — version not exposed in headers
+LiteSpeed (web server, behind Cloudflare)
+Cloudflare CDN + WAF (active)
+jQuery + Bootstrap (frontend)
+Google Tag Manager (analytics)
+</code></pre>
+<p><strong>Laravel</strong> = framework PHP modern, security-aware by default (CSRF, validation, escaping built-in). Ini positif.</p>
+<hr />
+<h2 id="2-security-headers-analysis">2. Security Headers Analysis</h2>
+<p><strong>Bukti reproduksi</strong>:</p>
+<pre><code class="language-bash">curl -sI https://www.warmadewa.ac.id/
+</code></pre>
+<p><strong>Hasil</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Header</th>
+<th>Status</th>
+<th>Catatan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Server: cloudflare</code></td>
+<td>✅</td>
+<td>Cloudflare menyembunyikan origin server</td>
+</tr>
+<tr>
+<td><code>X-Turbo-Charged-By: LiteSpeed</code></td>
+<td>(info)</td>
+<td>LiteSpeed visible (di belakang Cloudflare)</td>
+</tr>
+<tr>
+<td><code>Strict-Transport-Security</code></td>
+<td>❌ <strong>MISSING</strong></td>
+<td>HTTPS-only enforcement</td>
+</tr>
+<tr>
+<td><code>Content-Security-Policy</code></td>
+<td>❌ <strong>MISSING</strong></td>
+<td>XSS defense in depth</td>
+</tr>
+<tr>
+<td><code>X-Frame-Options</code></td>
+<td>❌ <strong>MISSING</strong></td>
+<td>Clickjacking protection</td>
+</tr>
+<tr>
+<td><code>X-Content-Type-Options</code></td>
+<td>❌ <strong>MISSING</strong></td>
+<td>MIME sniffing protection</td>
+</tr>
+<tr>
+<td><code>Referrer-Policy</code></td>
+<td>❌ <strong>MISSING</strong></td>
+<td>Referrer leak prevention</td>
+</tr>
+<tr>
+<td><code>Permissions-Policy</code></td>
+<td>❌ <strong>MISSING</strong></td>
+<td>Browser feature restrictions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Catatan</strong>: Semua security headers hilang. Cloudflare handle rate limiting, tapi defense in depth header harus ditambah di origin (LiteSpeed config) atau via Cloudflare Transform Rules.</p>
+<hr />
+<h2 id="3-cookie-security-analysis-positif">3. 🟢 Cookie Security Analysis (POSITIF)</h2>
+<p><strong>Bukti</strong>:</p>
+<pre><code class="language-bash">curl -sI https://www.warmadewa.ac.id/ | grep &quot;Set-Cookie&quot;
+</code></pre>
+<p><strong>Cookies</strong>:<br />
+| Cookie | Secure | HttpOnly | SameSite | Max-Age | Analisis |<br />
+|---|---|---|---|---|---|<br />
+| <code>XSRF-TOKEN=...</code> | ✅ | ❌ | <code>lax</code> | 7200s (2h) | Laravel CSRF token (default flags) |<br />
+| <code>laravel_session=...</code> | ✅ | ✅ | <code>lax</code> | 7200s (2h) | Laravel session (default flags) |<br />
+| <code>zesXZsnTWkKIShM7GTNeC6as5KHPUkywfN8OQhYe=...</code> | ✅ | ✅ | <code>lax</code> | 7200s (2h) | <strong>Custom cookie — perlu dicek</strong> |</p>
+<p><strong>Positif</strong>:<br />
+- ✅ <code>Secure</code> flag set (HTTPS only)<br />
+- ✅ <code>HttpOnly</code> set di session (XSS can't steal)<br />
+- ✅ <code>SameSite=Lax</code> (CSRF protection)<br />
+- ✅ Session timeout 2 jam (reasonable)</p>
+<p><strong>Custom cookie concern</strong>:<br />
+Cookie <code>zesXZsnTWkKIShM7GTNeC6as5KHPUkywfN8OQhYe</code> tidak standard Laravel. Mungkin:<br />
+- Custom middleware auth<br />
+- Session encryption key<br />
+- Third-party service (analytics, ads, etc.)</p>
+<p><strong>TIDAK ADA bukti ini vulnerable</strong> dari static analysis, tapi IT Warmadewa sebaiknya verify:<br />
+- Apa cookie ini?<br />
+- Apakah value predictable?<br />
+- Apakah ada logout invalidation?</p>
+<hr />
+<h2 id="4-form-analysis">4. Form Analysis</h2>
+<p><strong>3 forms di homepage</strong>, semua <strong>search forms (GET)</strong>:<br />
+- <code>&lt;form action="https://www.warmadewa.ac.id/berita/search" method="GET"&gt;</code><br />
+- 2 duplikat (search di header + di mobile)</p>
+<p><strong>Analisis</strong>:<br />
+- ✅ GET method (read-only, no state change)<br />
+- ✅ Tidak ada form login/auth di public surface<br />
+- ✅ Tidak ada input yang reflected di homepage</p>
+<p><strong>Tidak ada XSS attack surface</strong> dari forms yang visible.</p>
+<hr />
+<h2 id="5-endpoint-reconnaissance">5. Endpoint Reconnaissance</h2>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Status</th>
+<th>Catatan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/robots.txt</code></td>
+<td>200</td>
+<td>Normal</td>
+</tr>
+<tr>
+<td><code>/sitemap.xml</code></td>
+<td>404</td>
+<td>Tidak ada sitemap (atau di path lain)</td>
+</tr>
+<tr>
+<td><code>/wp-login.php</code></td>
+<td>404</td>
+<td>Bukan WordPress (confirmed)</td>
+</tr>
+<tr>
+<td><code>/wp-admin/</code></td>
+<td>404</td>
+<td>Bukan WordPress</td>
+</tr>
+<tr>
+<td><code>/wp-json/</code></td>
+<td>404</td>
+<td>Bukan WordPress</td>
+</tr>
+<tr>
+<td><code>/wp-content/</code></td>
+<td>404</td>
+<td>Bukan WordPress</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Confirmed</strong>: Bukan WordPress. Ini Laravel. Eliminates banyak common WP vulnerabilities (user enumeration, plugin exploits).</p>
+<hr />
+<h2 id="6-other-observations">6. Other Observations</h2>
+<ul>
+<li>✅ Cloudflare di front (WAF + DDoS protection)</li>
+<li>✅ CSRF token visible (Laravel default)</li>
+<li>✅ Session cookie HttpOnly</li>
+<li>✅ 2-hour session timeout</li>
+<li>✅ HTTPS enforced (cookies <code>Secure</code> flag)</li>
+<li>✅ jQuery + Bootstrap (umum, well-known libraries)</li>
+<li>✅ Google Tag Manager (analytics — perlu privacy review terpisah)</li>
+<li>⚠️ No security headers (defense in depth gap)</li>
+<li>⚠️ LiteSpeed version not directly exposed (bagus, tapi bisa dicek via fingerprinting)</li>
+</ul>
+<hr />
+<h2 id="7-rekomendasi">7. Rekomendasi</h2>
+<h3 id="immediate-1-2-jam">Immediate (1-2 jam)</h3>
+<ol>
+<li><strong>Tambah security headers</strong> di LiteSpeed config atau Cloudflare Transform Rules:<br />
+   - <code>Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</code><br />
+   - <code>Content-Security-Policy: default-src 'self'; ...</code><br />
+   - <code>X-Frame-Options: SAMEORIGIN</code><br />
+   - <code>X-Content-Type-Options: nosniff</code><br />
+   - <code>Referrer-Policy: strict-origin-when-cross-origin</code></li>
+</ol>
+<h3 id="short-term-1-2-minggu">Short-term (1-2 minggu)</h3>
+<ol start="2">
+<li><strong>Audit custom cookie</strong> (<code>zesXZsnTWkKIShM7GTNeC6as5KHPUkywfN8OQhYe</code>) — apa fungsi dan apakah secure</li>
+<li><strong>Review Google Tag Manager</strong> privacy implications (kalau EU user, GDPR concern)</li>
+</ol>
+<h3 id="medium-term-1-3-bulan">Medium-term (1-3 bulan)</h3>
+<ol start="4">
+<li>Laravel security audit:<br />
+   - Update ke Laravel versi terbaru (kalau belum)<br />
+   - Check dependencies untuk known CVEs (<code>composer audit</code>)<br />
+   - Review custom middleware</li>
+<li>HSTS preload submission</li>
+</ol>
+<hr />
+<h2 id="8-yang-tidak-saya-verifikasi-perlu-dicek-internal-warmadewa-it">8. Yang TIDAK Saya Verifikasi (perlu dicek internal Warmadewa IT)</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Yang perlu dicek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Laravel version &amp; dependencies</strong></td>
+<td><code>composer outdated</code> + <code>composer audit</code></td>
+</tr>
+<tr>
+<td><strong>Custom cookie purpose</strong></td>
+<td>Apakah predictable? Invalidation on logout?</td>
+</tr>
+<tr>
+<td><strong>Authenticated area</strong></td>
+<td>Session handling setelah login</td>
+</tr>
+<tr>
+<td><strong>Admin panel</strong></td>
+<td>Authorization, brute force protection</td>
+</tr>
+<tr>
+<td><strong>Database credentials</strong></td>
+<td><code>.env</code> file security</td>
+</tr>
+<tr>
+<td><strong>CSRF on forms</strong></td>
+<td>Laravel biasanya handle, tapi verify custom forms</td>
+</tr>
+<tr>
+<td><strong>File upload</strong></td>
+<td>Ada form upload? Validasi type?</td>
+</tr>
+<tr>
+<td><strong>API endpoints</strong></td>
+<td>Kalau ada API di <code>/api/*</code></td>
+</tr>
+<tr>
+<td><strong>Backup &amp; logging</strong></td>
+<td>Laravel.log security, file permissions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-etika-pengujian">9. Etika Pengujian</h2>
+<p>Saya hanya melakukan static analysis:<br />
+- ✅ HTTP header inspection<br />
+- ✅ HTML/JS source reading<br />
+- ✅ Public endpoint probing<br />
+- ❌ Tidak ada login attempt<br />
+- ❌ Tidak ada payload submission<br />
+- ❌ Tidak ada active testing</p>
+<hr />
+<h2 id="10-kesimpulan">10. Kesimpulan</h2>
+<p><strong>Warmadewa secara keseluruhan lebih aman dari UNUD</strong> yang aku review sebelumnya. Laravel framework memberikan:<br />
+- CSRF protection built-in<br />
+- Session management yang proper<br />
+- Cookie security default yang baik</p>
+<p><strong>Gap utama: missing security headers.</strong> Itu fix 1-2 jam via LiteSpeed config atau Cloudflare Transform Rules. Tidak ada exploitable hole dari public surface.</p>
+<p><strong>Risk level</strong>: 🟢 <strong>RENDAH</strong> (defense in depth gap, bukan exploitable)</p>
+<hr />
+<h2 id="11-kontak">11. Kontak</h2>
+<p><strong>Afiq Andico</strong><br />
+Mahasiswa Program Studi Sistem Informasi<br />
+STIKOM Bali</p>
+<ul>
+<li>Email: afiqandico13@gmail.com</li>
+<li>GitHub: <a href="https://github.com/afiqandico13">@afiqandico13</a></li>
+</ul>
+</body>
+</html>

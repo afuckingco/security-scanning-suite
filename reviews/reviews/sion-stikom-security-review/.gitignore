@@ -1,0 +1,25 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build / temp
+*.tmp
+*.bak
+*.log
+__pycache__/
+*.pyc
+
+# OS-generated
+.Trash-*
+
+# Personal notes
+*.local.md
+scratch.md
