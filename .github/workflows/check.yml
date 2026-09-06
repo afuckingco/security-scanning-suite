@@ -16,7 +16,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install dockguard (tested component)
-        run: pip install -e ./dockguard
+        run: pip install -e ./dockguard pytest
       - name: Run tests (dockguard)
         working-directory: dockguard
         run: pytest -q
