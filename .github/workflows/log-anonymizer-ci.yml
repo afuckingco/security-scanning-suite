@@ -35,7 +35,7 @@ jobs:
           pytest -n auto
 
   docker:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') && secrets.DOCKERHUB_USERNAME != ''
     needs: test
     runs-on: ubuntu-latest
     permissions:

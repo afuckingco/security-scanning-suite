@@ -15,10 +15,22 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - name: Install dockguard (tested component)
-        run: pip install -e ./dockguard pytest
+      - name: Install components (editable) + pytest
+        # secure-ops-suite sengaja TIDAK di-install: dependensinya torch/pytorch-lightning (berat);
+        # tesnya struktural (tomllib) — jalan tanpa instal.
+        run: |
+          pip install -e ./dockguard -e ./log-anonymizer -e ./sec-scan-cli pytest
       - name: Run tests (dockguard)
         working-directory: dockguard
+        run: pytest -q
+      - name: Run tests (log-anonymizer)
+        working-directory: log-anonymizer
+        run: pytest -q
+      - name: Run tests (sec-scan-cli)
+        working-directory: sec-scan-cli
+        run: pytest -q
+      - name: Run tests (secure-ops-suite)
+        working-directory: secure-ops-suite
         run: pytest -q
       - name: Syntax check all Python
         run: |
@@ -40,3 +52,13 @@ jobs:
       - name: Build
         working-directory: sift
         run: go build ./...
+
+  rust:
+    name: Rust (secradar)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Check
+        working-directory: secradar
+        run: cargo check
