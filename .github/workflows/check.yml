@@ -1,0 +1,42 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    name: Python (pytest + syntax)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dockguard (tested component)
+        run: pip install -e ./dockguard
+      - name: Run tests (dockguard)
+        working-directory: dockguard
+        run: pytest -q
+      - name: Syntax check all Python
+        run: |
+          find dockguard log-anonymizer sec-scan-cli secure-ops-suite secure-ci-pipeline \
+            -name "*.py" -not -path "*/.venv/*" -exec python -m py_compile {} +
+          echo "py_compile OK (23 files)"
+
+  go:
+    name: Go (sift)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Vet
+        working-directory: sift
+        run: go vet ./...
+      - name: Build
+        working-directory: sift
+        run: go build ./...

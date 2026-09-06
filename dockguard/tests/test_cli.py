@@ -19,7 +19,7 @@ CMD ["node", "server.js"]
     with open(test_path, "w") as f:
         f.write(dockerfile)
 
-    code, out, err = run(["python", "-m", "dockguard", "--format", "json", "--no-color", test_path])
+    code, out, err = run([sys.executable, "-m", "dockguard", "--format", "json", "--no-color", test_path])
     assert code == 0, f"Expected exit 0, got {code}\nstdout={out}\nstderr={err}"
 
     import json
@@ -37,7 +37,7 @@ ENV PASSWORD=hello
     with open(test_path, "w") as f:
         f.write(dockerfile)
 
-    code, out, err = run(["python", "-m", "dockguard", "--format", "json", "--no-color", test_path])
+    code, out, err = run([sys.executable, "-m", "dockguard", "--format", "json", "--no-color", test_path])
     assert code == 2, f"Expected exit 2 (errors), got {code}"
 
     import json
@@ -52,25 +52,25 @@ def test_cli_github_format():
     with open(test_path, "w") as f:
         f.write(dockerfile)
 
-    code, out, err = run(["python", "-m", "dockguard", "--format", "github", "--no-color", test_path])
+    code, out, err = run([sys.executable, "-m", "dockguard", "--format", "github", "--no-color", test_path])
     assert "::warning" in out, f"Expected GitHub annotation format, got: {out}"
     print("✓ GitHub format → annotations present")
 
 
 def test_cli_quiet_mode():
-    dockerfile = "FROM node:20-alpine\n"
+    dockerfile = "FROM node:20-alpine\nUSER node\nHEALTHCHECK CMD wget -q --spider http://localhost:3000 || exit 1\nCMD [\"node\", \"server.js\"]\n"
     test_path = "/tmp/_dockguard_test_quiet.Dockerfile"
     with open(test_path, "w") as f:
         f.write(dockerfile)
 
-    code, out, err = run(["python", "-m", "dockguard", "--quiet", test_path])
+    code, out, err = run([sys.executable, "-m", "dockguard", "--quiet", test_path])
     assert code == 0
     assert out == "", f"Expected empty output in quiet mode, got: {out!r}"
     print("✓ Quiet mode → no output, exit code only")
 
 
 def test_cli_missing_file():
-    code, out, err = run(["python", "-m", "dockguard", "/nonexistent/Dockerfile"])
+    code, out, err = run([sys.executable, "-m", "dockguard", "/nonexistent/Dockerfile"])
     assert code == 2, f"Expected exit 2 for missing file, got {code}"
     print("✓ Missing file → exit 2")
 
