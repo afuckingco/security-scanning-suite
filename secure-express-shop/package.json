@@ -1,0 +1,44 @@
+{
+  "name": "secure-express-shop",
+  "version": "1.0.0",
+  "description": "A production‑ready, security‑hardened Node.js Express e‑commerce starter with built‑in CI, linting, and dependabot.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "lint": "eslint .",
+    "audit": "npm audit --audit-level=high",
+    "test": "jest",
+    "hash-password": "node -e \"const bcrypt = require('bcryptjs'); const readline = require('readline').createInterface({input: process.stdin, output: process.stdout}); readline.question('Password: ', pwd => { console.log(bcrypt.hashSync(pwd, 10)); readline.close(); });\""
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "security",
+    "ecommerce",
+    "ci"
+  ],
+  "author": "afuckingco",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "connect-sqlite3": "^0.9.16",
+    "cookie-parser": "^1.4.7",
+    "csrf-csrf": "^4.0.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "express-session": "^1.19.0",
+    "helmet": "^8.2.0",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
+  }
+}

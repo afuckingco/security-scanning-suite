@@ -1,0 +1,15 @@
+node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.env
+.env.*
+logs/
+*.log
+public/uploads/
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+dist/
+build/
