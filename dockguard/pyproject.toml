@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dockguard"
+version = "1.0.0"
+description = "Dockerfile security linter & analyzer — finds secrets, root user, curl|sh, and other anti-patterns"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{name = "Afiq Andico Pangimpian", email = "afiqandico13@gmail.com"}]
+requires-python = ">=3.8"
+keywords = ["docker", "dockerfile", "security", "linter", "static-analysis", "devops", "cli"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Security",
+]
+
+[project.scripts]
+dockguard = "dockguard.__main__:main"
+
+[tool.setuptools]
+packages = ["dockguard"]
+
+[project.urls]
+Homepage = "https://github.com/afiqandico13/dockguard"
+Issues = "https://github.com/afiqandico13/dockguard/issues"
+Changelog = "https://github.com/afiqandico13/dockguard/blob/main/CHANGELOG.md"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
