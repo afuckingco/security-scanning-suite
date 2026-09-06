@@ -1,0 +1,5 @@
+# Sift Custom Rules
+# Format: ID | Severity | Regex | Description
+
+CUST01 | HIGH | (?i)internal_db_pass\s*=\s*['"].+['"] | Internal DB Password Leak
+CUST02 | MEDIUM | (?i)192\.168\.\d{1,3}\.\d{1,3} | Hardcoded Internal IP Address
