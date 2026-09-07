@@ -1,0 +1,18 @@
+# ANF Research Shell — gitignore
+# Hasil eksperimen & artefak besar tidak di-track (kecuali manifest & source)
+__pycache__/
+*.pyc
+.venv/                 # venv repo-local (make setup) — berdiri sendiri, tidak di-commit
+research/outputs/*.csv
+research/outputs/*.json
+research/outputs/*.png
+research/outputs/*.txt
+!research/outputs/reproducibility_manifest.md
+
+# Runtime
+*.log
+*.tmp
+.cache/
+
+# Arsip cyber ops — lokal saja, TIDAK dipublikasikan (keputusan user 2026-09-07)
+research/archive/cyber-modules-v1.6/

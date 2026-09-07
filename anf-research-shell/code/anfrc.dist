@@ -1,0 +1,27 @@
+# ==============================================================================
+# ANF RESEARCH SHELL — Konfigurasi (dist)
+# Salin ke ~/.config/anf/anfrc lalu sesuaikan. Dibaca oleh bin/anf saat launch.
+# Semua variabel memakai prefix ANF_ dan di-import ke environment shell.
+# ==============================================================================
+
+# --- Workspace default ---------------------------------------------------------
+# ANF_WS="general"
+
+# --- Logging -------------------------------------------------------------------
+# ANF_LOG_LEVEL="info"            # debug | info | warn | error
+# ANF_LOG_FILE="$HOME/.cache/anf/logs/anf.log"
+
+# --- Keamanan / OPSEC ------------------------------------------------------------
+# ANF_PANIC_CLEAR_HIST="1"        # panic juga membersihkan history file (default aman: 0)
+
+# --- Network ---------------------------------------------------------------------
+# ANF_PROXY=""                    # contoh: http://127.0.0.1:8080 (dipakai serve/check-ip)
+# ANF_TIMEOUT_SEC="15"            # timeout default command jaringan
+
+# --- Path tool eksternal ----------------------------------------------------------
+# ANF_NMAP_BIN="$(command -v nmap)"
+# ANF_GOBUSTER_BIN="$(command -v gobuster)"
+
+# --- Penelitian / Reproduksibilitas ------------------------------------------------
+# ANF_RESEARCH_DIR="$HOME/Documents/ANF-Research-Shell/research/outputs"
+# ANF_SEED="42"                   # seed tetap untuk eksperimen ML yang reproducible

@@ -32,6 +32,7 @@ subfolder dengan README dan lisensinya sendiri.
 | [link-cleaner/](link-cleaner/) | Ekstensi browser (MV3) penghapus 88 parameter tracking |
 | [pilgrims/](pilgrims/) | Framework pentest 20 modul (untuk use-case yang diotorisasi) |
 | [reviews/](reviews/) | Laporan security review web kampus (private source; isi laporan depannya) |
+| [anf-research-shell/](anf-research-shell/) | Research workbench reproduktif (CLI zsh, `make verify` 25 gate, CI) — konsolidasi dari repo ANF-Research-Shell (2026-09-07) |
 
 ## Penggunaan Cepat (contoh)
 

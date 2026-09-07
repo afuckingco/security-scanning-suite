@@ -1,0 +1,41 @@
+# CI — verifikasi reproduksibilitas ANF Research Shell (konsolidasi di monorepo security-lab).
+# Alur == make setup + make verify: venv + requirements pin, lalu seluruh gate
+# (baseline ANF + deliverable JSI1/JSI2/JSI3 di sandbox, cek hash vs manifest).
+# Hanya berjalan saat ada perubahan pada anf-research-shell/**.
+name: verify-repro-anf
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'anf-research-shell/**'
+  pull_request:
+    paths:
+      - 'anf-research-shell/**'
+
+defaults:
+  run:
+    working-directory: anf-research-shell
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.14"
+
+      - name: Create venv + install pinned requirements (make setup)
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt
+
+      - name: Install zsh (baseline ANF)
+        run: sudo apt-get update && sudo apt-get install -y zsh
+
+      - name: Run make verify (sandbox, hash vs manifest)
+        run: PYTHON="$(pwd)/.venv/bin/python" bash scripts/verify_repro.sh
