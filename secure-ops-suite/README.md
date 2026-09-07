@@ -27,7 +27,7 @@ Both components share a **common Docker‑Compose orchestration**, making the su
 +--------------------+       +-------------------+
 ```
 
-- **Log Collector** runs the existing `secure-ci-pipeline` scripts, storing logs under `logs/`.
+- **Log Collector** runs the existing `sec-scan-cli` scripts, storing logs under `logs/`.
 - **Anomaly Analyzer** watches `logs/` (via `watchdog`), processes new files, and writes `anomaly_report.md`.
 - **Registry Proxy** intercepts package requests, runs the same security scripts (`npm audit`, `pip‑audit`, `gitleaks`), then forwards clean packages.
 

@@ -34,9 +34,9 @@ jobs:
         run: pytest -q
       - name: Syntax check all Python
         run: |
-          find dockguard log-anonymizer sec-scan-cli secure-ops-suite secure-ci-pipeline \
+          find dockguard log-anonymizer sec-scan-cli secure-ops-suite \
             -name "*.py" -not -path "*/.venv/*" -exec python -m py_compile {} +
-          echo "py_compile OK (23 files)"
+          echo "py_compile OK ($(find dockguard log-anonymizer sec-scan-cli secure-ops-suite -name '*.py' -not -path '*/.venv/*' | wc -l) files)"
 
   go:
     name: Go (sift)

@@ -1,12 +1,12 @@
-name: secure-ci-pipeline Security Scan
+name: sec-scan-cli Security Scan
 
 on:
   push:
     branches: [ main ]
-    paths: [ 'secure-ci-pipeline/**' ]
+    paths: [ 'sec-scan-cli/**' ]
   pull_request:
     types: [ opened, synchronize, reopened ]
-    paths: [ 'secure-ci-pipeline/**' ]
+    paths: [ 'sec-scan-cli/**' ]
 
 permissions:
   contents: read
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: secure-ci-pipeline
+        working-directory: sec-scan-cli
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: security-report
-          path: secure-ci-pipeline/security_report.md
+          path: sec-scan-cli/security_report.md
       - name: Send to Slack
         if: always()
         continue-on-error: true

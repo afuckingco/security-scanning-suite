@@ -33,7 +33,7 @@ desc() {
     lint-docker)  echo "Lint Dockerfile (dockguard, Python)";;
     anon-log)     echo "Anonimisasi log CSV (log-anonymizer, Python)";;
     scan)         echo "Security scan CLI terpadu (sec-scan-cli, Python)";;
-    ci-scan)      echo "Pipeline scan CI/CD multi-stack (secure-ci-pipeline, bash)";;
+    ci-scan)      echo "Pipeline scan CI/CD multi-stack (sec-scan-cli, bash)";;
     ops)          echo "Operasi keamanan: anomaly detection + proxy (secure-ops-suite)";;
     web-demo)     echo "Demo e-commerce defensif (secure-express-shop, Node)";;
     pilgrims)     echo "Framework pentest 20 modul (pilgrims, bash)";;
@@ -76,8 +76,8 @@ run_scan() {
 }
 
 run_ci-scan() {
-  # secure-ci-pipeline: jalankan seluruh script scan (butuh gitleaks/pip-audit/suricata)
-  local d=secure-ci-pipeline
+  # sec-scan-cli: jalankan seluruh script scan pipeline (butuh gitleaks/pip-audit/suricata)
+  local d=sec-scan-cli
   if [ "$#" -eq 0 ]; then
     (cd "$d" && exec bash -c 'for s in scripts/run_*.sh; do echo "=== $s ==="; bash "$s"; done')
   else

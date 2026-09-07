@@ -110,5 +110,5 @@ echo $?    # → 0 = bersih, siap lanjut ke pipeline
 
 - Exit code: dockguard 0 = bersih, 1 = ada finding, 2 = file tidak ditemukan.
 - Tool lain di repo ini: `log-anonymizer`, `sec-scan-cli`,
-  `secure-ci-pipeline` — lihat README masing-masing.
+  `secure-ops-suite`, `pilgrims` — lihat README masing-masing.
 - Gunakan hanya untuk lingkungan *authorized* (lihat README root — Catatan Etika).

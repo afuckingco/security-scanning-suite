@@ -19,6 +19,7 @@ build/
 # Node
 node_modules/
 package-lock.json
+!package-lock.json
 npm-debug.log
 
 # Docker

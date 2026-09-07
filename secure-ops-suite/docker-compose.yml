@@ -26,4 +26,4 @@ services:
     volumes:
       - ./scripts:/app/scripts
       - ./logs:/app/logs
-      - ./secure-ci-pipeline/scripts:/src/secure-ci-pipeline/scripts
+      - ./../sec-scan-cli/scripts:/src/sec-scan-cli/scripts

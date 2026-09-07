@@ -11,12 +11,11 @@ subfolder dengan README dan lisensinya sendiri.
 | [sift/](sift/) | Go | Secret scanner zero-dep (entropy, `git history`) — binary <2.5MB |
 | [dockguard/](dockguard/) | Python | Linter & analisa Dockerfile — 10 rules, CI-friendly |
 | [log-anonymizer/](log-anonymizer/) | Python | Anonimisasi log (CLI, FastAPI, Docker, CI/CD) |
-| [sec-scan-cli/](sec-scan-cli/) | Python | CLI scan keamanan terpadu |
+| [sec-scan-cli/](sec-scan-cli/) | Python | CLI scan terpadu + pipeline CI/CD (npm audit, pip-audit, gitleaks, Suricata — report, artifact, Slack) |
 
 ### CI/CD & Operasi
 | Komponen | Fungsi |
 |---|---|
-| [secure-ci-pipeline/](secure-ci-pipeline/) | Pipeline CI/CD security scanning multi-stack (Node, Python, IDS) |
 | [secure-ops-suite/](secure-ops-suite/) | Suite operasi keamanan (anomaly detection + npm/PyPI proxy) |
 
 ### Web & Demo
@@ -43,7 +42,7 @@ Semua tool di repo ini bisa dipakai lewat **satu entry point** (unified CLI):
 ./seclab lint-docker Df    # dockguard — lint Dockerfile
 ./seclab anon-log in.csv out.csv --algorithm hash
 ./seclab scan --help       # sec-scan-cli
-./seclab ci-scan           # secure-ci-pipeline
+./seclab ci-scan           # sec-scan-cli — pipeline scan (npm/pip/gitleaks)
 ./seclab pilgrims --help   # framework pentest
 ./seclab anf               # research workbench
 ```
