@@ -52,13 +52,3 @@ jobs:
       - name: Build
         working-directory: sift
         run: go build ./...
-
-  rust:
-    name: Rust (secradar)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Check
-        working-directory: secradar
-        run: cargo check

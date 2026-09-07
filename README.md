@@ -9,7 +9,6 @@ subfolder dengan README dan lisensinya sendiri.
 | Komponen | Bahasa | Fungsi |
 |---|---|---|
 | [sift/](sift/) | Go | Secret scanner zero-dep (entropy, `git history`) — binary <2.5MB |
-| [secradar/](secradar/) | Rust | Secret scanner cepat: 30 rules, entropy, git history, JSON/SARIF |
 | [dockguard/](dockguard/) | Python | Linter & analisa Dockerfile — 10 rules, CI-friendly |
 | [log-anonymizer/](log-anonymizer/) | Python | Anonimisasi log (CLI, FastAPI, Docker, CI/CD) |
 | [sec-scan-cli/](sec-scan-cli/) | Python | CLI scan keamanan terpadu |
