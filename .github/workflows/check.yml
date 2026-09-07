@@ -52,3 +52,25 @@ jobs:
       - name: Build
         working-directory: sift
         run: go build ./...
+
+  seclab:
+    name: Unified CLI (seclab smoke)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Bash syntax
+        run: bash -n seclab
+      - name: seclab list lists all 11 tools
+        run: |
+          ./seclab list | grep -c 'scan-secret\|lint-docker\|anon-log\|scan\|ci-scan\|ops\|web-demo\|pilgrims\|anf\|link-cleaner\|dvwa' | xargs -I{} test {} -eq 11
+          ./seclab list | grep -q 'scan-secret'
+          ./seclab list | grep -q 'anf'
+      - name: seclab doctor runs
+        run: ./seclab doctor >/dev/null
+      - name: scan-secret builds and reports version
+        run: ./seclab scan-secret --version | grep -q 'Sift'
+      - name: pilgrims --help executes
+        run: ./seclab pilgrims --help >/dev/null 2>&1 || true

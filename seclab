@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+#
+# seclab — satu CLI untuk seluruh Security Lab (unified entry point).
+#
+# Semua tool di monorepo dipanggil dari satu perintah. Tiap tool tetap hidup
+# di subfoldernya sendiri dengan runtime/bahasanya masing-masing; seclab hanya
+# men-dispatcher ke sana sehingga pemakaiannya seperti SATU project.
+#
+# Usage:
+#   seclab                 # daftar tool
+#   seclab list            # daftar tool
+#   seclab <tool> [args]   # jalankan tool
+#   seclab doctor          # cek ketersediaan runtime tiap tool
+#   seclab -h | --help
+#
+# Exit code: 0 bila tool dijalankan (atau info ditampilkan); 1 bila tool tak
+# dikenal / runtime hilang.
+set -u
+
+SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SELF_DIR"
+
+# ---------------------------------------------------------------------------
+# Definisi tool: name|description|runner
+# runner adalah fungsi bash bernama run_<name> di bawah.
+# ---------------------------------------------------------------------------
+
+TOOLS=(scan-secret lint-docker anon-log scan ci-scan ops web-demo pilgrims anf link-cleaner dvwa)
+
+desc() {
+  case "$1" in
+    scan-secret)  echo "Scan hardcoded secrets (sift, Go)";;
+    lint-docker)  echo "Lint Dockerfile (dockguard, Python)";;
+    anon-log)     echo "Anonimisasi log CSV (log-anonymizer, Python)";;
+    scan)         echo "Security scan CLI terpadu (sec-scan-cli, Python)";;
+    ci-scan)      echo "Pipeline scan CI/CD multi-stack (secure-ci-pipeline, bash)";;
+    ops)          echo "Operasi keamanan: anomaly detection + proxy (secure-ops-suite)";;
+    web-demo)     echo "Demo e-commerce defensif (secure-express-shop, Node)";;
+    pilgrims)     echo "Framework pentest 20 modul (pilgrims, bash)";;
+    anf)          echo "Research workbench reproduktif (anf-research-shell, zsh)";;
+    link-cleaner) echo "Ekstensi browser penghapus parameter tracking (info)";;
+    dvwa)         echo "Demo & analisis DVWA / SQLi (docs)";;
+  esac
+}
+
+# ---------------------------------------------------------------------------
+# Runner per tool
+# ---------------------------------------------------------------------------
+
+run_scan-secret() {
+  # sift: build sekali jika binary belum ada (Go stdlib, zero-dep)
+  local bin=sift/sift
+  if [ ! -x "$bin" ]; then
+    echo "[seclab] membangun sift (go build)..." >&2
+    (cd sift && go build -ldflags="-s -w" -o sift .) || { echo "ERROR: build sift gagal (butuh Go)" >&2; return 1; }
+  fi
+  "$PWD/$bin" "$@"
+}
+
+run_lint-docker() {
+  (cd dockguard && python3 -m dockguard "$@")
+}
+
+run_anon-log() {
+  # log-anonymizer: python -m log_anonymizer.cli
+  (cd log-anonymizer && PYTHONPATH=src python3 -m log_anonymizer.cli "$@")
+}
+
+run_scan() {
+  # sec-scan-cli: entrypoint console `sec-scan`; fallback python -m sec_scan.cli
+  if command -v sec-scan >/dev/null 2>&1; then
+    sec-scan "$@"
+  else
+    (cd sec-scan-cli && PYTHONPATH=src python3 -m sec_scan.cli "$@")
+  fi
+}
+
+run_ci-scan() {
+  # secure-ci-pipeline: jalankan seluruh script scan (butuh gitleaks/pip-audit/suricata)
+  local d=secure-ci-pipeline
+  if [ "$#" -eq 0 ]; then
+    (cd "$d" && exec bash -c 'for s in scripts/run_*.sh; do echo "=== $s ==="; bash "$s"; done')
+  else
+    (cd "$d" && exec bash "scripts/run_$1.sh" "${@:2}")
+  fi
+}
+
+run_ops() {
+  echo "[seclab] secure-ops-suite: anomaly detection + npm/pypi proxy (Docker Compose)."
+  echo "        Jalankan: cd secure-ops-suite && docker compose up"
+  echo "        (komponen ini tidak punya CLI tunggal; gunakan perintah di atas)"
+  return 0
+}
+
+run_web-demo() {
+  echo "[seclab] secure-express-shop: demo web e-commerce defensif (Node)."
+  echo "        Jalankan: cd secure-express-shop && npm install && npm start"
+  return 0
+}
+
+run_pilgrims() {
+  (cd pilgrims && exec bash ./pilgrims.sh "$@")
+}
+
+run_anf() {
+  # ANF Research Shell: pastikan install.sh sudah menaruh `anf` di PATH,
+  # fallback ke script di subfolder.
+  if command -v anf >/dev/null 2>&1 && [ "$(readlink -f "$(command -v anf)")" != "$PWD/anf-research-shell/bin/anf" ]; then
+    anf "$@"
+  else
+    (cd anf-research-shell && exec bash ./bin/anf "$@")
+  fi
+}
+
+run_link-cleaner() {
+  echo "[seclab] link-cleaner: ekstensi browser MV3 — muat src/ via chrome://extensions (Developer mode)."
+  echo "        Tidak bisa dijalankan dari CLI; lihat link-cleaner/README.md."
+  return 0
+}
+
+run_dvwa() {
+  echo "[seclab] dvwa-portfolio: dokumentasi demo & analisis DVWA (SQLi, recon)."
+  echo "        Buka: dvwa-portfolio/README.md untuk alur lengkap."
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# Doctor: cek runtime
+# ---------------------------------------------------------------------------
+
+doctor() {
+  printf '%-14s %-10s %s\n' TOOL RUNTIME STATUS
+  local t r ok
+  for t in "${TOOLS[@]}"; do
+    case "$t" in
+      scan-secret) r="go"; [ -x sift/sift ] && ok="ok (binary)" || { command -v go >/dev/null && ok="ok (perlu build)" || ok="MISSING"; };;
+      lint-docker) r="python3"; command -v python3 >/dev/null && ok=ok || ok=MISSING;;
+      anon-log)    r="python3"; command -v python3 >/dev/null && ok=ok || ok=MISSING;;
+      scan)        r="python3"; command -v python3 >/dev/null && ok=ok || ok=MISSING;;
+      ci-scan)     r="bash";     ok=ok;;
+      ops)         r="docker";   command -v docker >/dev/null && ok=ok || ok=MISSING;;
+      web-demo)    r="node";     command -v node >/dev/null && ok=ok || ok=MISSING;;
+      pilgrims)    r="bash+zsh"; ok=ok;;
+      anf)         r="bash+zsh"; ok=ok;;
+      link-cleaner) r="-";       ok="manual (browser)";;
+      dvwa)        r="-";        ok="docs";;
+    esac
+    printf '%-14s %-10s %s\n' "$t" "$r" "$ok"
+  done
+}
+
+# ---------------------------------------------------------------------------
+# Dispatcher
+# ---------------------------------------------------------------------------
+
+case "${1:-}" in
+  ""|list|ls)
+    echo "seclab — Security Lab unified CLI"
+    echo
+    printf '%-14s %s\n' "TOOL" "DESKRIPSI"
+    for t in "${TOOLS[@]}"; do printf '%-14s %s\n' "$t" "$(desc "$t")"; done
+    echo
+    echo "Gunakan: seclab <tool> [args...] | seclab doctor"
+    ;;
+  doctor)
+    doctor
+    ;;
+  -h|--help|help)
+    echo "seclab — satu CLI untuk seluruh Security Lab."
+    echo "  seclab               daftar tool"
+    echo "  seclab list          daftar tool"
+    echo "  seclab doctor        cek ketersediaan runtime"
+    echo "  seclab <tool> [args] jalankan tool (lihat daftar di 'seclab list')"
+    ;;
+  *)
+    tool="$1"; shift
+    found=0
+    for t in "${TOOLS[@]}"; do [ "$t" = "$tool" ] && found=1; done
+    if [ "$found" = 0 ]; then
+      echo "ERROR: tool '$tool' tidak dikenal. Daftar: seclab list" >&2
+      exit 1
+    fi
+    run_"$tool" "$@"
+    exit $?
+    ;;
+esac

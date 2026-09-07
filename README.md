@@ -30,8 +30,26 @@ subfolder dengan README dan lisensinya sendiri.
 |---|---|
 | [link-cleaner/](link-cleaner/) | Ekstensi browser (MV3) penghapus 88 parameter tracking |
 | [pilgrims/](pilgrims/) | Framework pentest 20 modul (untuk use-case yang diotorisasi) |
-| [reviews/](reviews/) | Laporan security review web kampus (private source; isi laporan depannya) |
 | [anf-research-shell/](anf-research-shell/) | Research workbench reproduktif (CLI zsh, `make verify` 25 gate, CI) — konsolidasi dari repo ANF-Research-Shell (2026-09-07) |
+
+## Satu CLI: `seclab`
+
+Semua tool di repo ini bisa dipakai lewat **satu entry point** (unified CLI):
+
+```bash
+./seclab list              # daftar tool
+./seclab doctor            # cek runtime yang tersedia
+./seclab scan-secret .     # sift — scan hardcoded secrets
+./seclab lint-docker Df    # dockguard — lint Dockerfile
+./seclab anon-log in.csv out.csv --algorithm hash
+./seclab scan --help       # sec-scan-cli
+./seclab ci-scan           # secure-ci-pipeline
+./seclab pilgrims --help   # framework pentest
+./seclab anf               # research workbench
+```
+
+`seclab` hanya men-dispatcher; tiap tool tetap berjalan di subfoldernya dengan
+runtime/bahasanya sendiri (lihat tabel). Symlink opsional: `ln -s seclab ~/.local/bin/seclab`.
 
 ## Penggunaan Cepat (contoh)
 
