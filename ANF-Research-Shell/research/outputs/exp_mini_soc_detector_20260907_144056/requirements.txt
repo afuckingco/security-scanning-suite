@@ -1,0 +1,16 @@
+# ANF Research Shell — requirements deliverable JSI1 (mini-SOC ML detector)
+# Reproduksi eksperimen: research/outputs/exp_mini_soc_detector_20260907_144056/run.sh
+# Verifikasi end-to-end: make verify (scripts/verify_repro.sh)
+#
+# Dikembangkan & diverifikasi pada Python 3.14.4 (Linux).
+# Numerik deterministik seed 42 — lihat reproducibility_manifest.md §8.
+
+# Runtime eksperimen (train_detector_real.py — training XGBoost 12.000 sampel sintetis)
+numpy==2.5.2
+xgboost==3.4.1
+scikit-learn==1.9.0
+psutil==7.2.2
+scapy==2.7.0
+
+# Artefak (build_artifact.py — CSV/JSON/PNG metrik)
+matplotlib==3.11.1

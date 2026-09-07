@@ -1,0 +1,40 @@
+# CI — verifikasi reproduksibilitas ANF Research Shell (monorepo security-lab).
+# GitHub Actions hanya menjalankan workflow di root repo; workflow ini menggantikan
+# .github/workflows/ci.yml bawaan ANF. Jalankan hanya saat folder ANF berubah:
+#   make setup (venv + requirements pin) -> make verify (baseline + JSI1/JSI2/JSI3,
+#   sandbox, hash vs manifest). Gate nilai ilmiah toleran lintas-mesin (lihat
+#   ANF-Research-Shell/research/outputs/reproducibility_manifest.md §10.3).
+name: anf-verify
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ANF-Research-Shell/**'
+      - '.github/workflows/anf-verify.yml'
+  pull_request:
+    paths:
+      - 'ANF-Research-Shell/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.14"
+
+      - name: Create venv + install pinned requirements (make setup)
+        run: |
+          python -m venv ANF-Research-Shell/.venv
+          ANF-Research-Shell/.venv/bin/pip install --upgrade pip
+          ANF-Research-Shell/.venv/bin/pip install -r ANF-Research-Shell/requirements.txt
+
+      - name: Install zsh (baseline ANF)
+        run: sudo apt-get update && sudo apt-get install -y zsh
+
+      - name: Run make verify (sandbox, hash vs manifest)
+        run: PYTHON="$(pwd)/ANF-Research-Shell/.venv/bin/python" bash ANF-Research-Shell/scripts/verify_repro.sh

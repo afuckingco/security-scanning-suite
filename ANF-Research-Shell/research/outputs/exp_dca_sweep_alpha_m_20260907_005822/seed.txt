@@ -1,0 +1,2 @@
+SEED=42
+random_int=686579303

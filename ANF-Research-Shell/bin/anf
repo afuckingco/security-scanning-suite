@@ -1,0 +1,67 @@
+#!/usr/bin/env zsh
+# ==============================================================================
+# ANF RESEARCH SHELL — Enterprise Launcher
+# Entry point CLI: `anf <cmd> [args...]` menjalankan satu command dari shell,
+# atau `anf` (tanpa argumen) memuat shell interaktif lengkap (ZLE popup + banner).
+#
+# Lokasi script inti: $(dirname $0)/../code/anf_research_shell.zsh
+# Konfigurasi:        $ANF_CONFIG  (default $HOME/.config/anf/anfrc)
+# ==============================================================================
+set -u
+
+# --- Resolve lokasi script inti (dukung symlink + multi-lokasi) ---------------
+_SELF="${(%):-%x}"
+_SELF="$(readlink -f "$_SELF" 2>/dev/null || print -r -- "$_SELF")"
+_ANF_DIR="${_SELF:h}"
+
+# Prioritas lokasi script inti:
+#  1. env ANF_LIB eksplisit
+#  2. relatif ke launcher: <bindir>/../code/anf_research_shell.zsh (install default)
+#  3. lokasi project (repo source)
+_ANF_LIB=""
+for cand in \
+    "${ANF_LIB:-}" \
+    "${_ANF_DIR:h}/lib/anf/anf_research_shell.zsh" \
+    "${_ANF_DIR:h}/code/anf_research_shell.zsh" \
+    "${_ANF_DIR}/../code/anf_research_shell.zsh" \
+    "$HOME/Documents/ANF-Research-Shell/code/anf_research_shell.zsh"; do
+    if [[ -n "$cand" && -f "$cand" ]]; then
+        _ANF_LIB="$cand"
+        break
+    fi
+done
+
+if [[ -z "$_ANF_LIB" ]]; then
+    print -u2 "ANF: script inti tidak ditemukan. Set ANF_LIB=<path> atau instal dengan install.sh."
+    return 1 2>/dev/null || exit 1
+fi
+
+# --- Baca konfigurasi (jika ada) ----------------------------------------------
+_ANF_CFG="${ANF_CONFIG:-$HOME/.config/anf/anfrc}"
+[[ -f "$_ANF_CFG" ]] && source "$_ANF_CFG"
+
+# --- Load library -------------------------------------------------------------
+source "$_ANF_LIB"
+
+# --- Dispatch -----------------------------------------------------------------
+if (( $# == 0 )); then
+    # Interaktif: biarkan banner dipanggil (script sudah handle `[[ -z ... ]]`)
+    # dan shell menerima input /cmd lewat alias + ZLE popup.
+    if [[ -o interactive ]]; then
+        return 0 2>/dev/null  # sudah ter-source di environment parent
+    fi
+    exec zsh -i -c "source '$_ANF_LIB'"
+    exit 0
+fi
+
+# Mode command tunggal: `anf subdomains example.com`
+_cmd="$1"; shift
+_func="anf_${_cmd//-/_}"
+if (( ${+functions[$_func]} )); then
+    "$_func" "$@"
+    exit $?
+fi
+
+print -u2 "ANF: command tidak dikenal: /$_cmd"
+print -u2 "Coba 'anf help' untuk daftar command."
+exit 1

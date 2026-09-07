@@ -1,0 +1,13 @@
+# ANF Research Shell — requirements deliverable JSI2 (VAE validation, SLR)
+# Reproduksi eksperimen: research/outputs/exp_jsi2_vae_20260907_152636/run.sh
+# Verifikasi end-to-end: make verify (scripts/verify_repro.sh)
+#
+# Dikembangkan & diverifikasi pada Python 3.14.4 (Linux), torch CPU.
+# Numerik deterministik seed 42 — lihat reproducibility_manifest.md §9.
+# torch CPU-only dari PyTorch index (ringan utk CI/standalone).
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+torch==2.13.0+cpu
+numpy==2.5.2
+matplotlib==3.11.1
