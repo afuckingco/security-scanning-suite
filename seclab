@@ -5,6 +5,7 @@
 # Semua tool di monorepo dipanggil dari satu perintah. Tiap tool tetap hidup
 # di subfoldernya sendiri dengan runtime/bahasanya masing-masing; seclab hanya
 # men-dispatcher ke sana sehingga pemakaiannya seperti SATU project.
+# Kebijakan: repo fokus pada project CLI (komponen non-CLI sudah dihapus).
 #
 # Usage:
 #   seclab                 # daftar tool
@@ -13,8 +14,7 @@
 #   seclab doctor          # cek ketersediaan runtime tiap tool
 #   seclab -h | --help
 #
-# Exit code: 0 bila tool dijalankan (atau info ditampilkan); 1 bila tool tak
-# dikenal / runtime hilang.
+# Exit code: 0 bila tool dijalankan; 1 bila tool tak dikenal / runtime hilang.
 set -u
 
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -25,7 +25,7 @@ cd "$SELF_DIR"
 # runner adalah fungsi bash bernama run_<name> di bawah.
 # ---------------------------------------------------------------------------
 
-TOOLS=(scan-secret lint-docker anon-log scan ci-scan ops web-demo pilgrims anf link-cleaner dvwa)
+TOOLS=(scan-secret lint-docker anon-log scan ci-scan pilgrims anf)
 
 desc() {
   case "$1" in
@@ -34,12 +34,8 @@ desc() {
     anon-log)     echo "Anonimisasi log CSV (log-anonymizer, Python)";;
     scan)         echo "Security scan CLI terpadu (sec-scan-cli, Python)";;
     ci-scan)      echo "Pipeline scan CI/CD multi-stack (sec-scan-cli, bash)";;
-    ops)          echo "Operasi keamanan: anomaly detection + proxy (secure-ops-suite)";;
-    web-demo)     echo "Demo e-commerce defensif (secure-express-shop, Node)";;
     pilgrims)     echo "Framework pentest 20 modul (pilgrims, bash)";;
     anf)          echo "Research workbench reproduktif (anf-research-shell, zsh)";;
-    link-cleaner) echo "Ekstensi browser penghapus parameter tracking (info)";;
-    dvwa)         echo "Demo & analisis DVWA / SQLi (docs)";;
   esac
 }
 
@@ -85,19 +81,6 @@ run_ci-scan() {
   fi
 }
 
-run_ops() {
-  echo "[seclab] secure-ops-suite: anomaly detection + npm/pypi proxy (Docker Compose)."
-  echo "        Jalankan: cd secure-ops-suite && docker compose up"
-  echo "        (komponen ini tidak punya CLI tunggal; gunakan perintah di atas)"
-  return 0
-}
-
-run_web-demo() {
-  echo "[seclab] secure-express-shop: demo web e-commerce defensif (Node)."
-  echo "        Jalankan: cd secure-express-shop && npm install && npm start"
-  return 0
-}
-
 run_pilgrims() {
   (cd pilgrims && exec bash ./pilgrims.sh "$@")
 }
@@ -110,18 +93,6 @@ run_anf() {
   else
     (cd anf-research-shell && exec bash ./bin/anf "$@")
   fi
-}
-
-run_link-cleaner() {
-  echo "[seclab] link-cleaner: ekstensi browser MV3 — muat src/ via chrome://extensions (Developer mode)."
-  echo "        Tidak bisa dijalankan dari CLI; lihat link-cleaner/README.md."
-  return 0
-}
-
-run_dvwa() {
-  echo "[seclab] dvwa-portfolio: dokumentasi demo & analisis DVWA (SQLi, recon)."
-  echo "        Buka: dvwa-portfolio/README.md untuk alur lengkap."
-  return 0
 }
 
 # ---------------------------------------------------------------------------
@@ -138,12 +109,8 @@ doctor() {
       anon-log)    r="python3"; command -v python3 >/dev/null && ok=ok || ok=MISSING;;
       scan)        r="python3"; command -v python3 >/dev/null && ok=ok || ok=MISSING;;
       ci-scan)     r="bash";     ok=ok;;
-      ops)         r="docker";   command -v docker >/dev/null && ok=ok || ok=MISSING;;
-      web-demo)    r="node";     command -v node >/dev/null && ok=ok || ok=MISSING;;
       pilgrims)    r="bash+zsh"; ok=ok;;
       anf)         r="bash+zsh"; ok=ok;;
-      link-cleaner) r="-";       ok="manual (browser)";;
-      dvwa)        r="-";        ok="docs";;
     esac
     printf '%-14s %-10s %s\n' "$t" "$r" "$ok"
   done

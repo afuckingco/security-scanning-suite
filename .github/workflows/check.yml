@@ -16,8 +16,6 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install components (editable) + pytest
-        # secure-ops-suite sengaja TIDAK di-install: dependensinya torch/pytorch-lightning (berat);
-        # tesnya struktural (tomllib) — jalan tanpa instal.
         run: |
           pip install -e ./dockguard -e ./log-anonymizer -e ./sec-scan-cli pytest
       - name: Run tests (dockguard)
@@ -29,14 +27,11 @@ jobs:
       - name: Run tests (sec-scan-cli)
         working-directory: sec-scan-cli
         run: pytest -q
-      - name: Run tests (secure-ops-suite)
-        working-directory: secure-ops-suite
-        run: pytest -q
       - name: Syntax check all Python
         run: |
-          find dockguard log-anonymizer sec-scan-cli secure-ops-suite \
+          find dockguard log-anonymizer sec-scan-cli \
             -name "*.py" -not -path "*/.venv/*" -exec python -m py_compile {} +
-          echo "py_compile OK ($(find dockguard log-anonymizer sec-scan-cli secure-ops-suite -name '*.py' -not -path '*/.venv/*' | wc -l) files)"
+          echo "py_compile OK ($(find dockguard log-anonymizer sec-scan-cli -name '*.py' -not -path '*/.venv/*' | wc -l) files)"
 
   go:
     name: Go (sift)
@@ -65,7 +60,7 @@ jobs:
         run: bash -n seclab
       - name: seclab list lists all 11 tools
         run: |
-          ./seclab list | grep -c 'scan-secret\|lint-docker\|anon-log\|scan\|ci-scan\|ops\|web-demo\|pilgrims\|anf\|link-cleaner\|dvwa' | xargs -I{} test {} -eq 11
+          ./seclab list | grep -c 'scan-secret\|lint-docker\|anon-log\|scan\|ci-scan\|pilgrims\|anf' | xargs -I{} test {} -eq 7
           ./seclab list | grep -q 'scan-secret'
           ./seclab list | grep -q 'anf'
       - name: seclab doctor runs

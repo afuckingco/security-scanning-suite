@@ -1,7 +1,8 @@
 # Security Lab
 
-Konsolidasi tool keamanan, demo, dan laporan (2026-09-06). Setiap komponen berada di
-subfolder dengan README dan lisensinya sendiri.
+Konsolidasi tool keamanan CLI (2026-09-07). Kebijakan: **fokus project CLI saja**
+(komponen non-CLI — web demo, ekstensi browser, suite docker — sudah dihapus).
+Setiap komponen berada di subfolder dengan README dan lisensinya sendiri.
 
 ## Komponen
 
@@ -13,21 +14,9 @@ subfolder dengan README dan lisensinya sendiri.
 | [log-anonymizer/](log-anonymizer/) | Python | Anonimisasi log (CLI, FastAPI, Docker, CI/CD) |
 | [sec-scan-cli/](sec-scan-cli/) | Python | CLI scan terpadu + pipeline CI/CD (npm audit, pip-audit, gitleaks, Suricata — report, artifact, Slack) |
 
-### CI/CD & Operasi
-| Komponen | Fungsi |
-|---|---|
-| [secure-ops-suite/](secure-ops-suite/) | Suite operasi keamanan (anomaly detection + npm/PyPI proxy) |
-
-### Web & Demo
-| Komponen | Bahasa | Fungsi |
-|---|---|---|
-| [secure-express-shop/](secure-express-shop/) | JavaScript/Express | E-commerce defensif (helmet, CSRF, rate limiting, session) |
-| [dvwa-portfolio/](dvwa-portfolio/) | Python/DVWA | Demo & analisis DVWA (setup, recon, SQLi) — lihat [README](dvwa-portfolio/README.md) |
-
 ### Lainnya
 | Komponen | Fungsi |
 |---|---|
-| [link-cleaner/](link-cleaner/) | Ekstensi browser (MV3) penghapus 88 parameter tracking |
 | [pilgrims/](pilgrims/) | Framework pentest 20 modul (untuk use-case yang diotorisasi) |
 | [anf-research-shell/](anf-research-shell/) | Research workbench reproduktif (CLI zsh, `make verify` 25 gate, CI) — konsolidasi dari repo ANF-Research-Shell (2026-09-07) |
 
@@ -63,8 +52,8 @@ Detail per tool ada di README masing-masing subfolder.
 
 ## Catatan Etika
 
-Tool di repo ini untuk *authorized* testing dan pembelajaran. `pilgrims`, `dvwa-portfolio`,
-dan `reviews/` hanya digunakan pada lingkungan dengan izin eksplisit.
+Tool di repo ini untuk *authorized* testing dan pembelajaran. `pilgrims`
+hanya digunakan pada lingkungan dengan izin eksplisit.
 
 ## Lisensi
 

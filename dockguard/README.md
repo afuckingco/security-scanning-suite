@@ -232,6 +232,5 @@ MIT © 2026 Afiq Andico Pangimpian
 ## 🔗 Related Projects
 
 - [pilgrims](https://github.com/afiqandico13/pilgrims) — Bash web security scanner
-- [link-cleaner](https://github.com/afiqandico13/link-cleaner) — Privacy browser extension
 - [tokokita](https://github.com/afiqandico13/tokokita) — Security-hardened Node.js shop
 - [kopikita](https://github.com/afiqandico13/kopikita) — ML cafe analytics
